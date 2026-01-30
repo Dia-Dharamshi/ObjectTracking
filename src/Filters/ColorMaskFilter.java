@@ -8,10 +8,10 @@ public class ColorMaskFilter implements PixelFilter {
     int threshold;
 
     public ColorMaskFilter(){
-        targetRed = 37;
-        targetGreen = 180;
+        targetRed = 29;
+        targetGreen = 203;
         targetBlue = 45;
-        threshold = 80;
+        threshold = 50;
     }
     @Override
     public DImage processImage(DImage img) {
@@ -64,12 +64,13 @@ public class ColorMaskFilter implements PixelFilter {
         if (g1 == 0 || g2 == 0 || b1 == 0 || b2 == 0) {
             return false;
         }
-        double rRatio1 = (double) r1 / g1;
-        double rRatio2 = (double) r2 / g2;
-        double gRatio1 = (double) g1 / b1;
-        double gRatio2 = (double) g2 / b2;
 
-        return (Math.abs(rRatio1 - rRatio2) < 0.4 && Math.abs(gRatio1 - gRatio2) < 0.4);
+        double rRatio1 = (double) r1 / (r1 + b1 +g1);
+        double rRatio2 = (double) r2 / (r2 + b2 +g2);
+        double gRatio1 = (double) g1 / (r1 + b1 +g1);
+        double gRatio2 = (double) g2 / (r2 + b2 +g2);
+
+        return (Math.abs(rRatio1 - rRatio2) < 0.3 && Math.abs(gRatio1 - gRatio2) < 0.3);
     }
 
     public int[] findCenter(short[][]red) {
