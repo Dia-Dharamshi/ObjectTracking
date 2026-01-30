@@ -3,15 +3,13 @@ package Filters;
 import Interfaces.PixelFilter;
 import core.DImage;
 
-import javax.swing.*;
-
 public class ColorMaskFilter implements PixelFilter {
     short targetRed; short targetGreen; short targetBlue;
     int threshold;
 
     public ColorMaskFilter(){
         targetRed = 37;
-        targetGreen = 131;
+        targetGreen = 180;
         targetBlue = 45;
         threshold = 80;
     }
@@ -36,6 +34,11 @@ public class ColorMaskFilter implements PixelFilter {
                 }
             }
         }
+
+        int[] center = findCenter(red);
+        if (center != null) {
+            drawCenterCircle(red, green, blue, center[0], center[1]);
+        }
         img.setColorChannels(red, green, blue);
         return img;
     }
@@ -58,15 +61,62 @@ public class ColorMaskFilter implements PixelFilter {
     }
 
     public boolean closeRatios(short r1, short g1, short b1, short r2, short g2, short b2){
-        double thresh = 0.5;
-        if (distanceTo(r1, r2, g1, g2) < thresh && distanceTo(g1, g2, b1, b2) < thresh && distanceTo(b1, b2, r1, r2) < thresh){
-            return true;
+        if (g1 == 0 || g2 == 0 || b1 == 0 || b2 == 0) {
+            return false;
         }
-        return false;
+        double rRatio1 = (double) r1 / g1;
+        double rRatio2 = (double) r2 / g2;
+        double gRatio1 = (double) g1 / b1;
+        double gRatio2 = (double) g2 / b2;
+
+        return (Math.abs(rRatio1 - rRatio2) < 0.4 && Math.abs(gRatio1 - gRatio2) < 0.4);
     }
 
-    public double distanceTo(short n1, short n2, short m1, short m2){
-        return (Math.abs(Math.abs(m1-m2))-(Math.abs(n1-n2)));
+    public int[] findCenter(short[][]red) {
+        int sumX = 0;
+        int sumY = 0;
+        int count = 0;
+
+        for (int r = 0; r < red.length; r++) {
+            for (int c = 0; c < red[r].length; c++) {
+                if (red[r][c] == 255) {
+                    sumX += c;  // x = column
+                    sumY += r;  // y = row
+                    count++;
+                }
+            }
+        }
+        if (count < 120) return null;
+
+        int centerX = sumX / count;
+        int centerY = sumY / count;
+
+        return new int[]{centerX, centerY};
+
+    }
+
+    public void drawCenterCircle(short[][] r, short[][] g, short[][] b, int cx, int cy){
+        int rows = r.length;
+        int cols = r[0].length;
+
+        int r2 = 10 * 10;
+
+        for (int y1 = -10; y1 <= 10; y1++) {
+            for (int x1 = -10; x1 <= 10; x1++) {
+
+                int x = cx + x1;
+                int y = cy + y1;
+
+                if (x < 0 || x >= cols || y < 0 || y >= rows) continue;
+
+                int dist2 = x1 * x1 + y1 * y1;
+                if (Math.abs(dist2 - r2) < 10) {
+                    r[y][x] = 255;
+                    g[y][x] = 0;
+                    b[y][x] = 0;
+                }
+            }
+        }
     }
 
 
