@@ -19,6 +19,10 @@ public class ColorMaskFilter implements PixelFilter {
         short[][] green = img.getGreenChannel();
         short[][] blue = img.getBlueChannel();
 
+        short[][] red1 = img.getRedChannel();
+        short[][] green1 = img.getGreenChannel();
+        short[][] blue1 = img.getBlueChannel();
+
         for (int r = 0; r < red.length; r++) {
             for (int c = 0; c < red[r].length; c++) {
                 boolean close = closeColors(red[r][c], green[r][c], blue[r][c], targetRed, targetGreen, targetBlue);
@@ -37,9 +41,9 @@ public class ColorMaskFilter implements PixelFilter {
 
         int[] center = findCenter(red);
         if (center != null) {
-            drawCenterCircle(red, green, blue, center[0], center[1]);
+            drawCenterCircle(red, center[0], center[1], red1, green1, blue1);
         }
-        img.setColorChannels(red, green, blue);
+        img.setColorChannels(red1, green1, blue1);
         return img;
     }
 
@@ -96,7 +100,7 @@ public class ColorMaskFilter implements PixelFilter {
 
     }
 
-    public void drawCenterCircle(short[][] r, short[][] g, short[][] b, int cx, int cy){
+    public void drawCenterCircle(short[][] r, int cx, int cy, short[][] r1, short[][] g1, short[][] b1){
         int rows = r.length;
         int cols = r[0].length;
 
@@ -112,9 +116,9 @@ public class ColorMaskFilter implements PixelFilter {
 
                 int dist2 = x1 * x1 + y1 * y1;
                 if (Math.abs(dist2 - r2) < 10) {
-                    r[y][x] = 255;
-                    g[y][x] = 0;
-                    b[y][x] = 0;
+                    r1[y][x] = 255;
+                    g1[y][x] = 0;
+                    b1[y][x] = 0;
                 }
             }
         }
