@@ -9,12 +9,18 @@ public class ColorMaskFilter implements PixelFilter {
     short targetBlue;
     int threshold;
     static int[] lastCenter;
+    private DImage star;
+    private DImage downsampledStar;
+
 
     public ColorMaskFilter() {
         targetRed = 29;
         targetGreen = 203;
         targetBlue = 45;
         threshold = 50;
+        star = new DImage("images/7.jpg");
+        downsampledStar = Downsample(star);
+
     }
 
     public static int[] getLastCenter() {
@@ -24,7 +30,7 @@ public class ColorMaskFilter implements PixelFilter {
 
     @Override
     public DImage processImage(DImage img) {
-        DImage star = new DImage("images/7.jpg");
+
         short[][] red = img.getRedChannel();
         short[][] green = img.getGreenChannel();
         short[][] blue = img.getBlueChannel();
@@ -50,11 +56,10 @@ public class ColorMaskFilter implements PixelFilter {
         }
 
         lastCenter = findCenter(red);
-        drawStar(red, red1, green1, blue1, star);
-        img.setColorChannels(red1, green1, blue1);
         if (lastCenter != null) {
             drawStar(red, red1, green1, blue1, img);
         }
+        img.setColorChannels(red1, green1, blue1);
         return img;
     }
 
@@ -101,6 +106,7 @@ public class ColorMaskFilter implements PixelFilter {
                     sumY += r;  // y = row
                     count++;
                 }
+
             }
         }
         if (count < 120) return null;
@@ -137,7 +143,7 @@ public class ColorMaskFilter implements PixelFilter {
 //    }
 
     public void drawStar(short[][]red, short[][] r1, short[][] g1, short[][] b1, DImage image) {
-        DImage image1 = Downsample(image);
+        DImage image1 = downsampledStar;
         int height = image1.getHeight();
         int width = image1.getWidth();
         int[] center = findCenter(red);
@@ -149,13 +155,20 @@ public class ColorMaskFilter implements PixelFilter {
         short[][] imgBlue = image1.getBlueChannel();
         for (int r = 0; r < height; r++) {
             for (int c = 0; c < width; c++) {
-                r1[startY+r][startX+c] = imgRed[r][c];
-                g1[startY+r][startX+c] = imgGreen[r][c];
-                b1[startY+r][startX+c] = imgBlue[r][c];
-            }
+                int y = startY + r;
+                int x = startX + c;
 
+                if (y < 0 || y >= r1.length || x < 0 || x >= r1[0].length)
+                    continue;
+
+                r1[y][x] = imgRed[r][c];
+                g1[y][x] = imgGreen[r][c];
+                b1[y][x] = imgBlue[r][c];
+            }
         }
+
     }
+
 
     public DImage Downsample(DImage img){
         short[][] grid = img.getBWPixelGrid();
