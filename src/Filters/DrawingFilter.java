@@ -8,7 +8,8 @@ import processing.core.PApplet;
 public class DrawingFilter implements PixelFilter, Drawable {
 
     @Override
-    public DImage processImage(DImage img) {
+    public DImage processImage(DImage img){
+
         // we don't change the input image at all!
         return img;
     }
