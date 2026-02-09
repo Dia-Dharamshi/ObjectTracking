@@ -18,7 +18,7 @@ public class ColorMaskFilter implements PixelFilter {
         targetGreen = 203;
         targetBlue = 45;
         threshold = 50;
-        star = new DImage("images/7.jpg");
+        star = new DImage("images/Star.jpg");
         downsampledStar = Downsample(star);
 
     }
