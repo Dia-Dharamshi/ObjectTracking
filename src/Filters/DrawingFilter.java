@@ -21,7 +21,7 @@ public class DrawingFilter implements PixelFilter, Drawable {
     private int frameCount = 0;
 
 
-    //@Override
+    @Override
     public void setup(PApplet window) {
         watermelon = window.loadImage("images/Watermelon.png");
         ninjaStar = window.loadImage("images/Ninjastar.png");
@@ -176,4 +176,6 @@ public class DrawingFilter implements PixelFilter, Drawable {
         window.imageMode(PApplet.CORNER);
     }
 }
+
+
 
