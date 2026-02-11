@@ -8,6 +8,7 @@ import processing.core.PImage;
 
 import java.util.ArrayList;
 
+import static java.awt.SystemColor.window;
 
 public class DrawingFilter implements PixelFilter, Drawable {
     private final short targetRed = 29;
@@ -40,26 +41,32 @@ public class DrawingFilter implements PixelFilter, Drawable {
         short[][] green = img.getGreenChannel();
         short[][] blue = img.getBlueChannel();
 
-        for (int r = 0; r < red.length; r++) {
-            for (int c = 0; c < red[r].length; c++) {
-                boolean close = closeColors(red[r][c], green[r][c], blue[r][c]);
-                boolean closeR = closeRatios(red[r][c], green[r][c], blue[r][c], targetRed, targetGreen, targetBlue);
+        int height = red.length;
+        int width  = red[0].length;
+
+        for (int r = 0; r < height; r++) {
+            for (int c = 0; c < width; c++) {
+                boolean close  = closeColors(red[r][c], green[r][c], blue[r][c]);
+                boolean closeR = closeRatios(red[r][c], green[r][c], blue[r][c],
+                        targetRed, targetGreen, targetBlue);
                 if (close || closeR) {
-                    red[r][c] = 255;
+                    red[r][c]   = 255;
                     green[r][c] = 255;
-                    blue[r][c] = 255;
+                    blue[r][c]  = 255;
                 } else {
-                    red[r][c] = 0;
+                    red[r][c]   = 0;
                     green[r][c] = 0;
-                    blue[r][c] = 0;
+                    blue[r][c]  = 0;
                 }
             }
         }
 
         ballCenter = findCenter(red);
+
         img.setColorChannels(red, green, blue);
         return img;
     }
+
 
     public boolean closeColors(short r1, short g1, short b1) {
 
@@ -121,13 +128,14 @@ public class DrawingFilter implements PixelFilter, Drawable {
     private void drawCounter(PApplet window) {
         window.textSize(20);
         window.fill(0);
-        window.text("Current Streak: " + counter, 500, 350);
+        window.text("Current Streak: " + counter, 431, 436);
         window.fill(255);
     }
 
+
     private void spawnFruit(PApplet window) {
         frameCount++;
-        if (frameCount%60 == 0) {
+        if (frameCount%30 == 0) {
             fruits.add(new Fruit(window, 70, 5, watermelon));
         }
     }
@@ -174,7 +182,7 @@ public class DrawingFilter implements PixelFilter, Drawable {
         float dy = ballCenter[1] - f.centerY();
         float dist = (float) Math.sqrt(dx * dx + dy * dy);
 
-        if(dist < f.getRadius()){
+        if(dist<f.getRadius()){
             counter++;
             return true;
         }

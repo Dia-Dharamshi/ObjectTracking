@@ -23,6 +23,7 @@ public class Fruit {
     }
 
     public void draw(PApplet window) {
+
         if (img != null) {
             window.image(img, x, y, size, size);
         } else {
